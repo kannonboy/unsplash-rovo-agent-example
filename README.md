@@ -17,7 +17,6 @@ A **Rovo Agent** is an AI-powered assistant that can:
 - Respond when mentioned in comments across Atlassian products
 - Participate in natural conversations in Rovo chat
 - Execute custom actions to integrate with external systems
-- Maintain context across different interaction types
 
 ## Key Features Demonstrated
 
@@ -177,152 +176,14 @@ Agent: [Searches Unsplash and returns nature photos with thumbnails and details]
 ### Best Practices for Agent Prompts
 
 1. **Be Specific About Scope**: Clearly define what your agent can and cannot do
-2. **Handle Different Contexts**: Provide guidance for work items, comments, and chat
+2. **Handle Different Contexts**: Provide guidance for usage in work items, comments, and chat
 3. **Error Handling**: Include instructions for when actions fail
 4. **User Experience**: Guide the agent to be helpful and informative
-
-### Error Handling Patterns
-
-```javascript
-export async function myAction(payload) {
-  try {
-    // Your logic here
-    const result = await externalApiCall();
-    
-    if (!result.ok) {
-      return {
-        error: 'User-friendly error message',
-        status: 'error'
-      };
-    }
-    
-    return {
-      status: 'success',
-      data: result.data
-    };
-  } catch (error) {
-    console.error('Detailed error for logs:', error);
-    return {
-      error: 'Something went wrong. Please try again.',
-      status: 'error'
-    };
-  }
-}
-```
-
-## Configuration Management
-
-### Secure Storage
-Use Forge's secure storage for sensitive data:
-
-```javascript
-// Store securely
-await storage.setSecret('api-key', userApiKey);
-
-// Retrieve securely  
-const apiKey = await storage.getSecret('api-key');
-```
-
-### Admin Interface
-Provide configuration UI for administrators:
-- Use `jira:adminPage` module type
-- Implement with Forge React components
-- Handle validation and error states
-- Store configuration securely
-
-## Integration Patterns
-
-### External API Integration
-- Use `permissions.external.fetch` to allow external API calls
-- Handle rate limiting and API errors gracefully
-- Provide meaningful error messages to users
-- Consider caching for better performance
-
-### Data Processing
-- Transform external API responses into agent-friendly formats
-- Include relevant metadata for better AI understanding
-- Handle edge cases (empty results, malformed data)
-
-## Testing Your Agent
-
-### Manual Testing
-1. **Chat Testing**: Use conversation starters or direct messages
-2. **Work Item Testing**: Assign agent to test issues
-3. **Comment Testing**: @mention the agent in various contexts
-
-### Debugging
-- Check Forge logs: `forge logs`
-- Use console.log statements in your functions
-- Test configuration through admin interface
-
-## Deployment
-
-### Development
-```bash
-forge deploy --environment development
-```
-
-### Production
-```bash
-forge deploy --environment production
-```
-
-### Marketplace Distribution
-1. Package your app: `forge pack`
-2. Submit to Atlassian Marketplace
-3. Include comprehensive documentation
-4. Provide setup guides for end users
-
-## Common Pitfalls and Solutions
-
-### Agent Not Responding
-- Check agent prompt syntax in `manifest.yml`
-- Verify actions are properly registered
-- Ensure external permissions are configured
-
-### API Integration Issues
-- Validate external fetch permissions
-- Check API key configuration
-- Handle network timeouts and retries
-
-### Performance Considerations
-- Limit external API response sizes
-- Implement appropriate timeouts
-- Consider caching for frequently accessed data
-
-## Advanced Features
-
-### Context Awareness
-Your agent can access rich context:
-- Work item fields and metadata
-- Comment history and participants
-- User permissions and roles
-
-### Multi-Step Workflows
-Chain multiple actions together:
-1. Analyze work item context
-2. Search external systems
-3. Format and present results
-4. Follow up based on user feedback
-
-### Integration with Other Atlassian Products
-- Confluence: Search and create pages
-- Bitbucket: Access repository information
-- Jira Service Management: Handle service requests
 
 ## Resources
 
 - [Forge Documentation](https://developer.atlassian.com/platform/forge/)
-- [Rovo Agent Guide](https://developer.atlassian.com/platform/forge/build-a-rovo-agent/)
-- [Atlassian Design System](https://atlassian.design/)
 - [Forge Community](https://community.developer.atlassian.com/)
-
-## Support
-
-For questions about this example:
-1. Check the [Forge documentation](https://developer.atlassian.com/platform/forge/)
-2. Visit the [Developer Community](https://community.developer.atlassian.com/)
-3. Review the [Rovo Agent examples](https://bitbucket.org/atlassian/forge-examples/)
 
 ## License
 
