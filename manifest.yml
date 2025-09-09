@@ -1,9 +1,20 @@
 modules:
 
+  # ============================================================================
+  # ROVO AGENT DEFINITION
+  # ============================================================================
+  # This module defines your AI agent that can interact with users across
+  # multiple contexts: Rovo chat, automation actions, work item assignment, 
+  # and work item comments. 
+  
   rovo:agent:
     - key: unsplash-rovo-agent
       name: Unsplash Rovo Agent
       description: An agent that can fetch images from Unsplash
+      
+      # AGENT PROMPT: This is the core instruction set that defines your agent's
+      # personality, capabilities, and behavior. The LLM uses this as context
+      # for all interactions. Think of it as your agent's "job description."
       prompt: >
         # About you
 
@@ -12,12 +23,17 @@ modules:
         tasks.
 
         # Handling chat messages
+        # When users interact with your agent in Rovo chat, this section
+        # guides how the agent should respond and what actions to take.
 
         If a user asks for an image in chat you should use the "search-photos" 
         action to find a relevant image (or relevant images - you can call
         it multiple times if needed!).
 
         # Handling comments
+        # @mentions in comments on work items (Jira issues, Confluence pages)
+        # trigger this interaction mode. The agent has access to the full
+        # comment thread for context.
 
         If a user @mentions you in a comment you should review the rest of 
         the comments on the work item to see if there is further context (for 
@@ -25,6 +41,9 @@ modules:
         You should then proceed as above, using the "search-photos" action.
 
         # Handling work items
+        # When assigned to work items (Jira issues, etc.), the agent can access
+        # all fields, comments, and metadata to understand the context and
+        # provide relevant assistance.
 
         If you are assigned to a work item by a user, you should fetch all of 
         the work items fields and comments to review them for useful context. 
@@ -37,22 +56,41 @@ modules:
 
         Unless the user specifically asks for a single image, you should return 
         multiple options for them to choose from.
+      
+      # CONVERSATION STARTERS: Pre-defined prompts that users can select
+      # to quickly engage with your agent. These appear in the Rovo chat UI.
       conversationStarters:
         - Find me a photo relating to nature
         - Find a selection of photos relating to technology
+      
+      # ACTIONS: List of custom functions this agent can execute.
+      # These must be defined as 'action' modules below.
       actions:
         - search-photos
 
+  # ============================================================================
+  # CUSTOM ACTIONS
+  # ============================================================================
+  # Actions are functions that your Rovo agent can execute to perform specific
+  # tasks. They bridge the gap between natural language and structured API calls.
+  # Each action has defined inputs/outputs that the Rovo agent can understand and 
+  # use. For Rovo agents designed to integrate with other SaaS services, these 
+  # actions typically correspond to APIs offered by those services.
+  
   action:
     # This action searches Unsplash for photos based on a query and optional filters.
     # It uses an Access key (set by an administrator) for authentication.
     - key: search-photos
       name: Search Unsplash for photos
-      function: searchPhotos
-      actionVerb: GET
+      function: searchPhotos  # References the Forge function that implements this action
+      actionVerb: GET         # HTTP-style verb for semantic clarity
       description: >
-        When a user asks to log a message, this action logs the message to the
-        Forge logs.
+        Searches the Unsplash photo database for images matching the provided
+        query and optional filters. Returns structured photo data including
+        URLs, metadata, and photographer attribution.
+      
+      # INPUT SCHEMA: Defines the parameters the LLM can pass to this action.
+      # The LLM uses these schemas to understand what data to provide.
       inputs:
         query:
           title: query
@@ -60,12 +98,14 @@ modules:
           required: true
           description: |
             Search terms. For example, 'nature', 'technology', 'people'.
+            Use descriptive keywords for better results.
         color:
           title: color
           type: string
           required: false
           description: |
-            Filter results by color. Valid values are: black_and_white, black, white, yellow, orange, red, purple, magenta, green, teal, blue.
+            Filter results by color. Valid values are: black_and_white, black, 
+            white, yellow, orange, red, purple, magenta, green, teal, blue.
         orientation:
           title: orientation
           type: string
@@ -73,35 +113,70 @@ modules:
           description: |
             Filter by photo orientation. Valid values are: landscape, portrait, squarish.
 
+  # ============================================================================
+  # ADMINISTRATION INTERFACE
+  # ============================================================================
+  # Provides a configuration UI for administrators to set up the integration.
+  # This appears in Jira's "Manage Apps" section for site administrators.
+  
   jira:adminPage:
     - key: unsplash-admin
       title: Unsplash Configuration
-      render: native
-      resource: admin
+      render: native          # Uses Forge UI Kit components
+      resource: admin         # References the UI Kit component defined in the resources section below
       resolver:
-        function: resolver
+        function: resolver    # Backend functions for this admin page
 
+  # ============================================================================
+  # FORGE FUNCTIONS
+  # ============================================================================
+  # These are the actual JavaScript functions that implement your actions
+  # and admin functionality. They run in Forge's secure serverless environment.
+  
   function:
+    # The main action function that searches Unsplash
     - key: searchPhotos
-      handler: actions.searchPhotos
+      handler: actions.searchPhotos    # File.function format
+    
+    # Backend resolvers for the admin configuration page
     - key: resolver
       handler: resolver.handler
 
+# ============================================================================
+# FRONTEND RESOURCES
+# ============================================================================
+# React components that render in the Atlassian UI. These are bundled
+# and served by Forge's CDN infrastructure.
+
 resources:
   - key: admin
-    path: src/frontend/admin.jsx
+    path: src/frontend/admin.jsx    # Path to React component
+
+# ============================================================================
+# APP CONFIGURATION
+# ============================================================================
+# Runtime settings for your Forge app
 
 app:
   runtime:
-    name: nodejs22.x
-    memoryMB: 256
-    architecture: arm64
+    name: nodejs22.x       # Node.js runtime version
+    memoryMB: 256          # Memory allocation
+    architecture: arm64    # CPU architecture
   id: ari:cloud:ecosystem::app/b4e83644-a5d8-42fb-a2eb-714459fe8178
+
+# ============================================================================
+# PERMISSIONS & SECURITY
+# ============================================================================
+# Defines what your app can access and external services it can call
 
 permissions:
   scopes:
+    # Allows secure storage of configuration data (API keys, settings)
     - storage:app
+  
   external:
     fetch:
       backend:
+        # Allowlist external domains your app can make HTTP requests to
+        # This is required for security - Forge blocks all external calls by default
         - address: api.unsplash.com
