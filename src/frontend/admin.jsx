@@ -1,16 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ForgeReconciler, { 
   Box, 
   Button, 
   Form, 
   FormSection, 
-  FormHeader, 
   FormFooter,
-  Heading, 
   Textfield, 
   SectionMessage,
   Text,
-  Spinner,
   Link,
   Label,
   useForm
@@ -23,7 +20,7 @@ const AdminPage = () => {
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState('info');
 
-  const { handleSubmit, register, getFieldId, getValues } = useForm();
+  const { handleSubmit, getFieldId } = useForm();
 
   // Function to save the access key
   const onSubmit = async () => {
