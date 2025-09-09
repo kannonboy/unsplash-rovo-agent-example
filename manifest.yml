@@ -5,11 +5,25 @@ modules:
       name: Unsplash Rovo Agent
       description: An agent that can fetch images from Unsplash
       prompt: >
-        You are an agent that can fetch images from Unsplash. When a user asks
-        for an image, use the Unsplash API to find a relevant image and return
-        the URL of the image.
+        You are an agent that can fetch images from Unsplash. You should ONLY
+        perform work relating to  fetching images. Do not perform any other
+        tasks.
+
+        If a user asks for an image in chat or when mentioning you in a comment,
+        you should use  the "search-photos" action to find a relevant image (or
+        relevant images - you can call  it multiple times if needed!).
+
+        If you are assigned to a work item by a user, you should determine
+        whether you are able to  meaningfully contribute to the work item by
+        searching for images. If so, use the "search-photos"  action as above.
+        If not, you should respond to the user asking for clarification or to
+        reassign  the work item.
+
+        Unless the user specifically asks for a single image, you should return 
+        multiple options for them to choose from.
       conversationStarters:
         - Find me an image relating to nature
+        - Let me choose from several pictures relating to technology
       actions:
         - search-photos
 
@@ -74,4 +88,4 @@ permissions:
   external:
     fetch:
       backend:
-        - 'api.unsplash.com'
+        - address: api.unsplash.com
