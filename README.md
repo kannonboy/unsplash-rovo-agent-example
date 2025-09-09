@@ -92,8 +92,15 @@ Your agent can handle different types of interactions:
 
 1. **Clone and install dependencies:**
    ```bash
+   git clone https://github.com/kannonboy/unsplash-rovo-agent-example.git
+   cd unsplash-rovo-agent-example
    npm install
    ```
+
+2. **Register your own copy of the app**
+  ```bash
+  forge register
+  ```
 
 2. **Deploy to your development environment:**
    ```bash
