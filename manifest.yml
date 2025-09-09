@@ -11,12 +11,12 @@ modules:
       conversationStarters:
         - Find me an image relating to nature
       actions:
-        - search-photos-unsplash
+        - search-photos
 
   action:
     # This action searches Unsplash for photos based on a query and optional filters.
-    # It uses an API key (set by an administrator) for authentication.
-    - key: search-photos-unsplash
+    # It uses an Access key (set by an administrator) for authentication.
+    - key: search-photos
       name: Search Unsplash for photos
       function: searchPhotos
       actionVerb: GET
@@ -43,9 +43,23 @@ modules:
           description: |
             Filter by photo orientation. Valid values are: landscape, portrait, squarish.
 
+  jira:adminPage:
+    - key: unsplash-admin
+      title: Unsplash Configuration
+      render: native
+      resource: admin
+      resolver:
+        function: resolver
+
   function:
     - key: searchPhotos
       handler: actions.searchPhotos
+    - key: resolver
+      handler: resolver.handler
+
+resources:
+  - key: admin
+    path: src/frontend/admin.jsx
 
 app:
   runtime:
@@ -53,3 +67,11 @@ app:
     memoryMB: 256
     architecture: arm64
   id: ari:cloud:ecosystem::app/b4e83644-a5d8-42fb-a2eb-714459fe8178
+
+permissions:
+  scopes:
+    - storage:app
+  external:
+    fetch:
+      backend:
+        - 'api.unsplash.com'

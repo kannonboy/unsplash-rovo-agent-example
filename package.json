@@ -1,8 +1,15 @@
 {
-  "name": "rovo-agent-rovo",
+  "name": "unsplash-rovo-agent",
   "version": "1.2.1",
-  "description": "a sample forge app with rovo-agent module",
+  "description": "An agent that can fetch images from Unsplash",
   "main": "index.js",
   "private": true,
-  "license": "MIT"
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@forge/api": "^3.0.0",
+    "@forge/bridge": "^5.4.1",
+    "@forge/react": "^11.2.9",
+    "@forge/resolver": "^1.7.0",
+    "react": "^18.0.0"
+  }
 }
