@@ -1,0 +1,55 @@
+modules:
+
+  rovo:agent:
+    - key: unsplash-rovo-agent
+      name: Unsplash Rovo Agent
+      description: An agent that can fetch images from Unsplash
+      prompt: >
+        You are an agent that can fetch images from Unsplash. When a user asks
+        for an image, use the Unsplash API to find a relevant image and return
+        the URL of the image.
+      conversationStarters:
+        - Find me an image relating to nature
+      actions:
+        - search-photos-unsplash
+
+  action:
+    # This action searches Unsplash for photos based on a query and optional filters.
+    # It uses an API key (set by an administrator) for authentication.
+    - key: search-photos-unsplash
+      name: Search Unsplash for photos
+      function: searchPhotos
+      actionVerb: GET
+      description: >
+        When a user asks to log a message, this action logs the message to the
+        Forge logs.
+      inputs:
+        query:
+          title: query
+          type: string
+          required: true
+          description: |
+            Search terms. For example, 'nature', 'technology', 'people'.
+        color:
+          title: color
+          type: string
+          required: false
+          description: |
+            Filter results by color. Valid values are: black_and_white, black, white, yellow, orange, red, purple, magenta, green, teal, blue.
+        orientation:
+          title: orientation
+          type: string
+          required: false
+          description: |
+            Filter by photo orientation. Valid values are: landscape, portrait, squarish.
+
+  function:
+    - key: searchPhotos
+      handler: actions.searchPhotos
+
+app:
+  runtime:
+    name: nodejs22.x
+    memoryMB: 256
+    architecture: arm64
+  id: ari:cloud:ecosystem::app/b4e83644-a5d8-42fb-a2eb-714459fe8178
